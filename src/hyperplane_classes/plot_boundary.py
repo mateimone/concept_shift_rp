@@ -1,7 +1,6 @@
 import csv
 import numpy as np
 import matplotlib.pyplot as plt
-from river.datasets import synth
 from sklearn.svm import SVC
 
 
@@ -62,18 +61,23 @@ def classify_points(features, slope, intercept):
     return (features[:, 1] > slope * features[:, 0] + intercept).astype(int)
 
 
-def plot_dataset(features, labels, title):
+def plot_dataset(features, labels, slope, intercept, title):
     plt.figure(figsize=(8, 6))
     plt.scatter(features[:, 0], features[:, 1], c=labels, cmap='viridis', alpha=0.5)
+    x_vals = np.array(plt.gca().get_xlim())
+    y_vals = intercept + slope * x_vals
+    plt.plot(x_vals, y_vals, color='red')
+    plt.xlim(-0.1, 1.1)
+    plt.ylim(-0.1, 1.1)
     plt.title(title)
-    plt.xlabel('Feature 0')
-    plt.ylabel('Feature 1')
+    plt.xlabel('Feature 1')
+    plt.ylabel('Feature 2')
     plt.colorbar(label='Label')
     plt.grid(True)
     plt.show()
 
 def func(rotation_degrees: int):
-    csv_file = "../hyperplanes/10k_samples_hyperplane/10k_boundary_rotated_0_hyperplane.csv"
+    csv_file = "../hyperplanes/200k_samples_hyperplane/boundary_rotated_0_hyperplane.csv"
     original_features, original_labels, redundant_features = load_data_from_csv(csv_file)
 
     svm = SVC(kernel='linear')
@@ -95,45 +99,14 @@ def func(rotation_degrees: int):
     if 135 <= rotation_degrees <= 315:
         rotated_labels = 1 - rotated_labels
 
-    original_file = '../hyperplanes/200k_samples_hyperplane/boundary_rotated_0_hyperplane.csv'
-    with open(original_file, mode='w', newline='') as ori_file:
-        rot_writer = csv.writer(ori_file)
-        header = ['feature1', 'feature2'] + [f'redundant_feature_{i+1}' for i in range(redundant_features.shape[1])] + ['label']
-        # header = ['feature1', 'feature2'] + ['label']
-        rot_writer.writerow(header)
+    # plot_dataset(original_features, original_labels, slope, intercept, 'Original Hyperplane')
+    if rotation_degrees == 0:
+        plot_dataset(original_features, rotated_labels, rotated_slope, rotated_intercept,
+                     f'Original Dataset and Hyperplane')
+    else:
+        plot_dataset(original_features, rotated_labels, rotated_slope, rotated_intercept, f'Rotated Dataset and Hyperplane by {rotation_degrees} Degrees')
 
-        for feature, redundant, label in zip(original_features, redundant_features, rotated_labels):
-        # for feature, label in zip(original_features, original_labels):
-            row = list(feature) + list(redundant) + [label]
-            # row = list(feature) + [label]
-            rot_writer.writerow(row)
 
-    # rotated_file = f'../hyperplanes_with_redundancy/200k_samples_hyperplane_red_5/200k_boundary_rotated_{rotation_degrees}_hyperplane.csv'
-    # with open(rotated_file, mode='w', newline='') as rot_file:
-    #     rot_writer = csv.writer(rot_file)
-    #     header = ['feature1', 'feature2'] + [f'redundant_feature_{i+1}' for i in range(redundant_features.shape[1])] + ['label']
-    #     # header = ['feature1', 'feature2'] + ['label']
-    #     rot_writer.writerow(header)
-    #
-    #     for feature, redundant, label in zip(original_features, redundant_features, rotated_labels):
-    #     # for feature, label in zip(original_features, rotated_labels):
-    #         row = list(feature) + list(redundant) + [label]
-    #         # row = list(feature) + [label]
-    #         rot_writer.writerow(row)
-    #
-    # print("Boundary rotated dataset generated and saved.")
-
-    plot_dataset(original_features, original_labels, 'Original Hyperplane')
-    plot_dataset(original_features, rotated_labels, 'Boundary Rotated Hyperplane')
-
-func(0)
-func(10)
-func(20)
-func(30)
-func(40)
-func(50)
-func(60)
-func(70)
-func(80)
-func(90)
-
+rotation_degrees_list = [0, 10]
+for degrees in rotation_degrees_list:
+    func(degrees)
