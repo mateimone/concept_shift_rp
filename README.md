@@ -5,7 +5,7 @@ This project has been produced as part of CSE3000 - Research Project, at Delft U
 
 **Author**: Matei Ivan Tudor (m.t.ivan-1@student.tudelft.nl)
 
-Firstly, install the dependencies in requirements.txt. Make sure to install torch and torchvision with CUDA enabled, if your machine is able to perform calculations on CUDA cores.
+Firstly, install the dependencies in requirements.txt. Make sure that torch and torchvision have been installed with CUDA enabled, if your machine is able to perform calculations on CUDA cores.
 
 To run the experiments:
 1) CIFAR-10 : in the cifar_classes package, run the cifar_centralized.py and cifar_federated.py classes to train a centralized/federated model on CIFAR-10. Then, run the class get_model_accuracies.py in order to obtain the accuracies of the models on the test set, with your choice of transforms.
